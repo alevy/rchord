@@ -29,6 +29,16 @@ class ChordIdTest < Test::Unit::TestCase
     assert_equal expected, one + (2**KEY_SIZE - 50)
   end
   
+  def test_in
+    id = ChordId.new(100)
+    assert id.in(50, 150)
+    assert id.in(151, 150)
+    assert id.in(40, 40)
+    assert id.in(0, 100)
+    assert !id.in(151, 90)
+    assert !id.in(50, 60)
+  end
+  
 end
 
 if __FILE__ == $0
