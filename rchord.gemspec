@@ -27,6 +27,7 @@ Gem::Specification.new do |s|
      "lib/rchord/node.rb",
      "lib/rchord/remote_node.rb",
      "lib/rchord/transport.rb",
+     "rchord.gemspec",
      "test/rchord/test_chord_id.rb",
      "test/rchord/test_local_node.rb",
      "test/rchord/test_remote_node.rb",
