@@ -9,6 +9,7 @@ begin
     gem.email = "aalevy@gmail.com"
     gem.homepage = "http://github.com/alevy/rchord"
     gem.authors = ["Amit Levy"]
+    gem.add_development_dependency('mocha')
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
 
