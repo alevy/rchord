@@ -8,21 +8,55 @@ require 'remote_node'
 module RChord
   class ChordUdpServer
 
+    class NodeWrapper
+      def initialize(node)
+        @node = node
+      end
+      
+      def successor
+        @node.successor.info
+      end
+      
+      def find_successor(n)
+        @node.find_successor(ChordId.new(n)).info
+      end
+      
+      def closest_preceding_node(n)
+        @node.closest_preceding_node(ChordId.new(n)).info
+      end
+      
+      def predecessor
+        pred = @node.predecessor
+        pred.info if pred
+      end
+      
+      def notify(n)
+        @node.notify(RemoteNode.new(n))
+      end
+      
+      def id
+        @node.id
+      end
+      
+      def method_missing(name, *args)
+        @node.send(name, *args)
+      end
+    end
+
     def initialize(node)
-      @node = node
+      @node = NodeWrapper.new(node)
       @socket = UDPSocket.new
       @socket.bind(node.address, node.port)
     end
     
     def listen
       text, sender = @socket.recvfrom(1024)
-      match = text.match(/^([a-z_]+):(.+)/)
-      method = match[1]
-      args = Marshal.load(match[2])
-      #puts sender.values_at(3,1).inspect
       begin
+        match = text.match(/^([a-z_]+):(.+)/)
+        return nil unless match # if message is malformed, just return
+        method = match[1]
+        args = Marshal.load(match[2])
         result = @node.send(method, *args)
-        result = RemoteNode.new(result.info) if result.is_a?(Node)
         @socket.send(Marshal.dump(result), 0, *sender.values_at(3,1))
       rescue
         @socket.send(Marshal.dump($!), 0, *sender.values_at(3,1))
@@ -51,8 +85,9 @@ if __FILE__ == $0
   end
   serv = ChordUdpServer.new(node)
   t1 = Thread.new { serv.start }
-  puts node.join(rnode)
+  node.join(rnode)
   node.start
   puts node
   t1.join
 end
+

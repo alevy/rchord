@@ -3,7 +3,6 @@ Amit Levy
 =end
 
 require 'node'
-require 'remote_node'
 
 Thread.abort_on_exception = true
 
@@ -24,7 +23,9 @@ module RChord
     end
   
     def successor=(s)
+      old = @fingers[0]
       @fingers[0] = s
+      puts "Successor changed to #{s}" if old != s
     end
   
     ####################
@@ -47,23 +48,23 @@ module RChord
     end
   
     def join(n)
-      @predecessor = nil
-      @fingers[0] = n.find_successor(ChordId.new(self.id))
+      self.predecessor = nil
+      self.successor = n.find_successor(self)
     end
   
     def notify(n)
-      n = RemoteNode.new(n) if n.is_a?(Hash)
-      @predecessor = n if not predecessor or n.in(predecessor, self)
+      if not predecessor or n.in(predecessor, self)
+        self.predecessor = n
+        true
+      else
+        false
+      end
     end
   
     def stabalize
       x = successor.predecessor
-      @fingers[0] = x if x and x.in(self, successor)
-      if @fingers[0].is_a?(LocalNode)
-        @fingers[0].notify(self)
-      else
-        @fingers[0].notify(self.info)
-      end
+      self.successor = x if x and x.in(self, successor)
+      successor.notify(self)
     end
   
     def fix_fingers
@@ -73,7 +74,7 @@ module RChord
     end
   
     def check_predecessor
-      predecessor = nil unless predecessor and predecessor.ping
+      self.predecessor = nil unless predecessor and predecessor.ping
     end
   
     def ping
@@ -86,7 +87,8 @@ module RChord
           begin
             stabalize
           rescue
-            @fingers[0] = self
+            self.successor = self
+            $stderr.puts "stabalize: #{$!} #{predecessor}"
           end
           sleep 0.05
         end
@@ -96,6 +98,7 @@ module RChord
           begin
             fix_fingers
           rescue
+            $stderr.puts "fix_fingers: #{$!}"
           end
           sleep 0.05
         end
@@ -105,7 +108,8 @@ module RChord
           begin
             check_predecessor
           rescue
-            predecessor = nil
+            $stderr.puts "check_predecessor: #{$!}"
+            self.predecessor = nil
           end
           sleep 0.05
         end
@@ -120,3 +124,4 @@ module RChord
     end
   end
 end
+

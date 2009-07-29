@@ -45,3 +45,4 @@ if __FILE__ == $0
   require 'test/unit/ui/console/testrunner'
   Test::Unit::UI::Console::TestRunner.run(ChordIdTest)
 end
+

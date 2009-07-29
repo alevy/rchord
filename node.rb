@@ -8,12 +8,11 @@ module RChord
   class Node < ChordId
     
     attr_reader :address, :port
-  
+    
     def initialize(hash)
       super(hash[:id])
       @address = hash[:address]
       @port = hash[:port]
-      #@successor = hash[:successor]
     end
 
     def to_s
@@ -22,6 +21,10 @@ module RChord
         
     def info
       {:id => @id, :address => address, :port => port}
+    end
+    
+    def export
+      Node.new(info)
     end
   end
 end

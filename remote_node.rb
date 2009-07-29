@@ -3,31 +3,46 @@ Amit Levy
 =end
 
 require 'node'
-require 'socket'
-require 'local_node'
+require 'transport'
 
 module RChord
   class RemoteNode < Node
     
-    UDP_RECV_TIMEOUT = 3
-    
-    def initialize(hash)
+    def initialize(hash, transport=UDPTransport.new(hash[:address], hash[:port]))
       @id = hash[:id]
       @address = hash[:address]
       @port = hash[:port]
+      @transport = transport
     end
     
     def id
-      @id ||= method_missing("id")
+      @id ||= @transport.send_msg("id")
     end
-  
-    def method_missing(msg, *args)
-      socket ||= UDPSocket.new
-      socket.connect(@address, @port)
-      socket.send("#{msg}:#{Marshal.dump(args)}", 0)
-      resp = socket.recvfrom(1024) if select([socket], nil, nil, UDP_RECV_TIMEOUT)
-      raise "Connection Timed Out" unless resp
-      return Marshal.load(resp[0])
+    
+    def successor
+      RemoteNode.new(@transport.send_msg("successor"))
+    end
+    
+    def find_successor(n)
+      RemoteNode.new(@transport.send_msg("find_successor", n.id))
+    end
+    
+    def notify(n)
+      @transport.send_msg("notify", n.info)
+    end
+    
+    def closest_preceding_node(n)
+      RemoteNode.new(@transport.send_msg("closest_preceding_node", n.id))
+    end
+    
+    def ping
+      @transport.send_msg("ping")
+    end
+    
+    def predecessor
+      result = @transport.send_msg("predecessor")
+      RemoteNode.new(result) if result
     end
   end
 end
+

@@ -25,7 +25,8 @@ while id = gets
     puts cur
     puts cur.successor
   else
-    puts pred.first.find_successor(ChordId.new(id.to_i)).to_s
+    puts pred.first.find_successor(ChordId.new(eval(id))).to_s
   end
   print ">> "
 end
+
