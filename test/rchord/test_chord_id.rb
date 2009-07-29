@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
-require 'test/unit'
-require 'chord_id'
+require File.dirname(__FILE__) + "/../test_helper"
 
 class ChordIdTest < Test::Unit::TestCase
   

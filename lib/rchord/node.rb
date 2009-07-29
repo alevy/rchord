@@ -2,7 +2,7 @@
 Amit Levy
 =end
 
-require 'chord_id'
+require 'rchord/chord_id'
 
 module RChord
   class Node < ChordId

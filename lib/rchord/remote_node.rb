@@ -2,8 +2,8 @@
 Amit Levy
 =end
 
-require 'node'
-require 'transport'
+require 'rchord/node'
+require 'rchord/transport'
 
 module RChord
   class RemoteNode < Node

@@ -3,7 +3,7 @@ Amit Levy
 =end
 
 require 'socket'
-require 'remote_node'
+require 'rchord/remote_node'
 
 module RChord
   class ChordUdpServer

@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require 'local_node'
+require 'rchord/local_node'
 
 include RChord
 

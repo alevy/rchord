@@ -1,8 +1,6 @@
 #!/usr/bin/env ruby
 
-require 'test/unit'
-require 'remote_node'
-require 'mocha'
+require File.dirname(__FILE__) + "/../test_helper"
 
 module RChord
 
@@ -79,7 +77,3 @@ module RChord
   end
 end
 
-if __FILE__ == $0
-  require 'test/unit/ui/console/testrunner'
-  Test::Unit::UI::Console::TestRunner.run(RChord::RemoteNodeTest)
-end

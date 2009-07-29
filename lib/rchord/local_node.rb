@@ -2,7 +2,7 @@
 Amit Levy
 =end
 
-require 'node'
+require 'rchord/node'
 
 Thread.abort_on_exception = true
 
