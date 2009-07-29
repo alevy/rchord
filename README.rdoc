@@ -1,6 +1,6 @@
 = rchord
 
-Description goes here.
+Ruby implementation of Chord lookup system.
 
 == Copyright
 
