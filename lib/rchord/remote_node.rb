@@ -8,7 +8,7 @@ require 'rchord/transport'
 module RChord
   class RemoteNode < Node
     
-    def initialize(hash, transport=UDPTransport.new(hash[:address], hash[:port]))
+    def initialize(hash, transport=Transport::UDPTransport.new(hash[:address], hash[:port]))
       @id = hash[:id]
       @address = hash[:address]
       @port = hash[:port]

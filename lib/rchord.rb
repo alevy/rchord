@@ -4,3 +4,6 @@ require 'rchord/chord_id'
 require 'rchord/node'
 require 'rchord/local_node'
 require 'rchord/remote_node'
+
+module RChord
+end
