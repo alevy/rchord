@@ -5,7 +5,7 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "rchord"
-    gem.summary = %Q{TODO}
+    gem.summary = "Ruby implementation of Chord distributed lookup."
     gem.email = "aalevy@gmail.com"
     gem.homepage = "http://github.com/alevy/rchord"
     gem.authors = ["Amit Levy"]
