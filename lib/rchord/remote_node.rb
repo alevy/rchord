@@ -8,40 +8,45 @@ require 'rchord/transport'
 module RChord
   class RemoteNode < Node
     
-    def initialize(hash, transport=Transport::UDPTransport.new(hash[:address], hash[:port]))
+    def initialize(hash)
       @id = hash[:id]
       @address = hash[:address]
       @port = hash[:port]
-      @transport = transport
+      @transport = hash[:transport] || Transport::UDPTransport.new
     end
     
     def id
-      @id ||= @transport.send_msg("id")
+      @id ||= send_msg("id")
     end
     
     def successor
-      RemoteNode.new(@transport.send_msg("successor"))
+      RemoteNode.new(send_msg("successor").merge(:transport => @transport))
     end
     
     def find_successor(n)
-      RemoteNode.new(@transport.send_msg("find_successor", n.id))
+      RemoteNode.new(send_msg("find_successor", n.id).merge(:transport => @transport))
     end
     
     def notify(n)
-      @transport.send_msg("notify", n.info)
+      send_msg("notify", n.info)
     end
     
     def closest_preceding_node(n)
-      RemoteNode.new(@transport.send_msg("closest_preceding_node", n.id))
+      RemoteNode.new(send_msg("closest_preceding_node", n.id).merge(:transport => @transport))
     end
     
     def ping
-      @transport.send_msg("ping")
+      send_msg("ping")
     end
     
     def predecessor
-      result = @transport.send_msg("predecessor")
-      RemoteNode.new(result) if result
+      result = send_msg("predecessor")
+      RemoteNode.new(result.merge(:transport => @transport)) if result
+    end
+    
+    private
+    def send_msg(*args)
+      @transport.send_msg(@address, @port, *args)
     end
   end
 end

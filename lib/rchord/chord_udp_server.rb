@@ -2,7 +2,6 @@
 Amit Levy
 =end
 
-require 'socket'
 require 'rchord/remote_node'
 
 module RChord
@@ -43,29 +42,15 @@ module RChord
       end
     end
 
-    def initialize(node)
+    def initialize(transport, node, address, port)
       @node = NodeWrapper.new(node)
-      @socket = UDPSocket.new
-      @socket.bind(node.address, node.port)
-    end
-    
-    def listen
-      text, sender = @socket.recvfrom(1024)
-      begin
-        match = text.match(/^([a-z_]+):(.+)/)
-        return nil unless match # if message is malformed, just return
-        method = match[1]
-        args = Marshal.load(match[2])
-        result = @node.send(method, *args)
-        @socket.send(Marshal.dump(result), 0, *sender.values_at(3,1))
-      rescue
-        @socket.send(Marshal.dump($!), 0, *sender.values_at(3,1))
-      end
+      @transport = transport
+      @transport.bind(address, port)
     end
     
     def start
       loop do
-        listen
+        @transport.listen {|method, args| @node.send(method, *args)}
       end
     end
     
@@ -83,7 +68,7 @@ if __FILE__ == $0
   else
     rnode = node
   end
-  serv = ChordUdpServer.new(node)
+  serv = ChordUdpServer.new(Transport::UDPTransport.new, node, node.address, node.port)
   t1 = Thread.new { serv.start }
   node.join(rnode)
   node.start
